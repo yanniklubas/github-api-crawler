@@ -21,6 +21,7 @@ async function makeRequests(client: Octokit, keyword: string) {
 		recursive: true,
 	});
 	for await (const { data: repositories } of iterator) {
+		console.log(`Saving page ${i} for keyword ${keyword}`);
 		await writeFile(`output/${dir}/page-${i}.json`, repositories);
 		i++;
 	}
