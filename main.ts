@@ -5,25 +5,45 @@ function newClient(token: string) {
 	return new Octokit({ auth: token });
 }
 
-function newRequestIterator(client: Octokit, query: string) {
+const TIME_SLICES = [
+	"2020-01-01..2020-03-31",
+	"2020-04-01..2020-07-30",
+	"2020-08-01..2020-12-31",
+	"2021-01-01..2021-03-31",
+	"2021-04-01..2021-07-30",
+	"2021-08-01..2021-12-31",
+	"2022-01-01..2022-03-31",
+	"2022-04-01..2022-07-30",
+	"2022-08-01..2022-12-31",
+	"2023-01-01..2023-03-31",
+	"2023-04-01..2023-07-30",
+	"2023-08-01..2023-12-31",
+	"2024-01-01..*",
+];
+
+function newRequestIterator(client: Octokit, query: string, time: string) {
 	return client.paginate.iterator(
 		`GET /search/repositories?q=${encodeURIComponent(
-			`"${query}" in:readme|name|description pushed:>=2020-01-01 is:public archived:false`,
+			`"${query}" in:readme|name|description pushed:${time} is:public archived:false`,
 		)}`,
+		{ perPage: 100 },
 	);
 }
 
 async function makeRequests(client: Octokit, keyword: string) {
-	const iterator = newRequestIterator(client, keyword);
-	let i = 1;
-	const dir = keyword.replaceAll(" ", "_");
-	await Deno.mkdir(`output/${dir}`, {
-		recursive: true,
-	});
-	for await (const { data: repositories } of iterator) {
-		console.log(`Saving page ${i} for keyword ${keyword}`);
-		await writeFile(`output/${dir}/page-${i}.json`, repositories);
-		i++;
+	for (const time of TIME_SLICES) {
+		const iterator = newRequestIterator(client, keyword, time);
+		let i = 1;
+		const dir = keyword.replaceAll(" ", "_");
+		await Deno.mkdir(`output/${dir}`, {
+			recursive: true,
+		});
+		const timePath = time.replaceAll("..", "--");
+		for await (const { data: repositories } of iterator) {
+			console.log(`Saving page ${i} for keyword ${keyword}`);
+			await writeFile(`output/${dir}/${timePath}-page-${i}.json`, repositories);
+			i++;
+		}
 	}
 }
 
