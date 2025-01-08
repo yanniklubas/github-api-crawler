@@ -18,9 +18,7 @@ async function makeRequests(client: Octokit, keyword: string) {
 	let i = 1;
 	await Deno.mkdir(`output/${keyword}`, { recursive: true });
 	for await (const { data: repositories } of iterator) {
-		await writeJson(`output/${keyword}/page-${i}.json`, repositories, {
-			spaces: 2,
-		});
+		await writeFile(`output/${keyword}/page-${i}.json`, repositories);
 		i++;
 		break;
 	}
@@ -28,7 +26,7 @@ async function makeRequests(client: Octokit, keyword: string) {
 
 async function writeFile(path: string, data: object) {
 	try {
-		await Deno.writeTextFile(path, JSON.stringify(data));
+		await writeJson(path, data, { spaces: 2 });
 	} catch (e) {
 		console.error(e);
 	}
