@@ -9,7 +9,7 @@ function newRequestIterator(client: Octokit, query: string) {
 	return client.paginate.iterator(
 		`GET /search/repositories?q=${encodeURIComponent(
 			`"${query}" in:readme|name|description pushed:>=2020-01-01 is:public archived:false`,
-		)}&sort=stars`,
+		)}`,
 	);
 }
 
