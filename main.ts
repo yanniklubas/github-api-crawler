@@ -16,11 +16,13 @@ function newRequestIterator(client: Octokit, query: string) {
 async function makeRequests(client: Octokit, keyword: string) {
 	const iterator = newRequestIterator(client, keyword);
 	let i = 1;
-	await Deno.mkdir(`output/${keyword}`, { recursive: true });
+	const dir = keyword.replaceAll(" ", "_");
+	await Deno.mkdir(`output/${dir}`, {
+		recursive: true,
+	});
 	for await (const { data: repositories } of iterator) {
-		await writeFile(`output/${keyword}/page-${i}.json`, repositories);
+		await writeFile(`output/${dir}/page-${i}.json`, repositories);
 		i++;
-		break;
 	}
 }
 
