@@ -18,14 +18,10 @@ const TIME_SLICES = [
 	"2023-01-01..2023-04-01",
 	"2023-04-01..2023-08-01",
 	"2023-08-01..2024-01-01",
-	"2024-01-01..2024-01-02",
-	"2024-01-02..2024-01-03",
-	"2024-01-03..2024-01-04",
-	"2024-01-04..2024-01-05",
-	"2024-01-05..2024-01-06",
-	"2024-01-06..2024-01-07",
-	"2024-01-07..2024-01-08",
-	"2024-01-09..*",
+	"2024-01-01..2024-04-01",
+	"2024-04-01..2024-08-01",
+	"2024-08-01..2025-01-01",
+	"2025-01-01..*",
 ];
 
 function newRequestIterator(client: Octokit, query: string, time: string) {
@@ -33,7 +29,6 @@ function newRequestIterator(client: Octokit, query: string, time: string) {
 		`GET /search/repositories?q=${encodeURIComponent(
 			`"${query}" in:readme|name|description pushed:${time} is:public archived:false`,
 		)}`,
-		{ perPage: 100 },
 	);
 }
 
@@ -48,7 +43,7 @@ async function makeRequests(client: Octokit, keyword: string) {
 		const timePath = time.replaceAll("..", "--");
 		for await (const { data: repositories } of iterator) {
 			console.log(
-				`Saving page ${i} for keyword ${keyword} and time ${timePath}`,
+				`Saving page ${i} for keyword ${keyword} and time ${timePath.replaceAll("*", "today")}`,
 			);
 			await writeFile(`output/${dir}/${timePath}-page-${i}.json`, repositories);
 			i++;
