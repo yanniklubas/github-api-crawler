@@ -1,12 +1,12 @@
 import { FILTERED_JSON } from "./constants.ts";
 import { loadJson } from "./load.ts";
 
-const CHUNKS = 4;
+const CHUNKS = 6;
 
 async function main() {
 	const data = await loadJson(FILTERED_JSON);
 	if (!data.success || data.data === undefined) {
-		console.error(`failed to parse ${filePath}: ${data.error}`);
+		console.error(`failed to parse ${FILTERED_JSON}: ${data.error}`);
 		Deno.exit(1);
 	}
 	const searchResults = data.data;
