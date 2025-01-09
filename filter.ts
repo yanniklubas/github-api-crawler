@@ -23,12 +23,19 @@ async function main() {
 
 async function processJson(path: string, out: RepoSearchResult) {
 	const data = await loadJson(path);
+	const seen = new Set();
 
 	if (!data.success || data.data === undefined) {
 		console.error(`failed to load ${path}: ${data.error}`);
 	} else {
 		const arr = data.data;
-		out.push(...arr.filter((e) => e.language != null));
+		out.push(
+			...arr.filter((e) => {
+				const isDuplicate = seen.has(e.id);
+				seen.add(e.id);
+				return e.language != null && !isDuplicate;
+			}),
+		);
 	}
 }
 
