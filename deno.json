@@ -1,6 +1,6 @@
 {
   "tasks": {
-    "search": "deno run --allow-env --allow-net --allow-write main.ts"
+    "search": "deno run --allow-env --env-file --allow-net --allow-write main.ts"
     "filter": "deno run --allow-read --allow-write filter.ts"
     "stars": "deno run --allow-read stars.ts"
   },
