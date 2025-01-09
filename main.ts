@@ -1,4 +1,5 @@
 import { Octokit } from "https://esm.sh/octokit@4.0.3?dts";
+import { format } from "@std/datetime";
 import * as path from "jsr:@std/path";
 import { OUTPUT_BASE } from "./constants.ts";
 import { writeFilePretty } from "./write.ts";
@@ -30,7 +31,16 @@ const TIME_SLICES = [
 	"2024-01-01..2024-04-01",
 	"2024-04-01..2024-08-01",
 	"2024-08-01..2025-01-01",
+	// 2025
+	"2025-01-01..*",
 ];
+
+Date.prototype.addDays = function (days: number) {
+	const date = new Date(this.valueOf());
+	date.setDate(date.getDate() + days);
+	return date;
+};
+const TOMORROW = format(new Date().addDays(1), "yyyy-MM-dd");
 
 async function searchRepositories(
 	client: Octokit,
@@ -39,7 +49,7 @@ async function searchRepositories(
 ) {
 	const dirPath = await mkOutputDir(keyword.replaceAll(" ", "_"));
 	const iterator = newRequestIterator(client, keyword, timeSlice);
-	const time = timeSlice.replaceAll("..", "--");
+	const time = timeSlice.replaceAll("..", "--").replaceAll("*", TOMORROW);
 	let page = 1;
 	for await (const { data: repositories } of iterator) {
 		const fileName = `${time}-page-${page}.json`;
