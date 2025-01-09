@@ -85,7 +85,7 @@ async function mkOutputDir(dirName: string) {
 
 async function main() {
 	const token = Deno.env.get("GITHUB_API_TOKEN");
-	if (!token) {
+	if (token === undefined) {
 		console.error("Missing GitHub API token! Exiting...");
 		Deno.exit(1);
 	}
