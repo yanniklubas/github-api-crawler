@@ -47,8 +47,7 @@ async function searchRepositories(
 	keyword: string,
 	timeSlice: string,
 ) {
-	const dirPath = keyword.replaceAll(" ", "_");
-	await mkOutputDir(dirPath);
+	const dirPath = await mkOutputDir(keyword.replaceAll(" ", "_"));
 	const iterator = newRequestIterator(client, keyword, timeSlice);
 	const time = timeSlice.replaceAll("..", "--").replaceAll("*", TOMORROW);
 	let page = 1;
@@ -81,6 +80,7 @@ function newRequestIterator(
 async function mkOutputDir(dirName: string) {
 	const dirPath = path.join(OUTPUT_BASE, dirName);
 	await Deno.mkdir(dirPath, { recursive: true });
+	return dirPath;
 }
 
 async function main() {
