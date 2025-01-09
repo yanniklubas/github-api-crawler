@@ -1,31 +1,41 @@
-import { readJson, writeJson } from "https://deno.land/x/jsonfile@1.0.0/mod.ts";
+import { FILTERED_JSON, OUTPUT_BASE } from "./constants.ts";
+import { loadJson } from "./load.ts";
+import { type RepoSearchResult } from "./schema.ts";
+import { writeFilePretty } from "./write.ts";
+import * as path from "jsr:@std/path";
 
 async function main() {
-	const base = "output";
-	const data = [];
-	for await (const entry of Deno.readDir(base)) {
+	const filtered: RepoSearchResult = [];
+	for await (const entry of Deno.readDir(OUTPUT_BASE)) {
 		if (entry.isDirectory) {
-			const dirPath = `${base}/${entry.name}`;
+			const dirPath = path.join(OUTPUT_BASE, entry.name);
 			for await (const entry of Deno.readDir(dirPath)) {
-				if (entry.isFile && entry.name.endsWith(".json")) {
-					const filePath = `${dirPath}/${entry.name}`;
-					const slice = await readJson(filePath);
-					if (Array.isArray(slice)) {
-						const filtered = slice.filter((e) => e.language != null);
-						data.push(...filtered);
-					} else {
-						console.error(`${filePath} does not contain a top-level array`);
-					}
+				if (isJsonFile(entry)) {
+					const filePath = path.join(dirPath, entry.name);
+					await processJson(filePath, filtered);
 				}
 			}
 		}
 	}
-	const filePath = `${base}/filtered.json`;
-	console.log(`Writing ${data.length} entries to ${filePath}`);
-	await writeJson(filePath, data, { spaces: 2 });
+	console.log(`Writing ${filtered.length} entries to ${FILTERED_JSON}`);
+	await writeFilePretty(FILTERED_JSON, filtered);
 }
 
-// Learn more at https://docs.deno.com/runtime/manual/examples/module_metadata#concepts
+async function processJson(path: string, out: RepoSearchResult) {
+	const data = await loadJson(path);
+
+	if (!data.success || data.data === undefined) {
+		console.error(`failed to load ${path}: ${data.error}`);
+	} else {
+		const arr = data.data;
+		out.push(...arr.filter((e) => e.language != null));
+	}
+}
+
+function isJsonFile(entry: Deno.DirEntry): boolean {
+	return entry.isFile && entry.name.endsWith(".json");
+}
+
 if (import.meta.main) {
 	main();
 }

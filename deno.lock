@@ -1,5 +1,35 @@
 {
   "version": "4",
+  "specifiers": {
+    "jsr:@std/assert@1": "1.0.10",
+    "jsr:@std/datetime@~0.225.2": "0.225.2",
+    "jsr:@std/internal@^1.0.5": "1.0.5",
+    "jsr:@std/path@*": "1.0.8",
+    "jsr:@std/path@^1.0.8": "1.0.8",
+    "npm:zod@^3.24.1": "3.24.1"
+  },
+  "jsr": {
+    "@std/assert@1.0.10": {
+      "integrity": "59b5cbac5bd55459a19045d95cc7c2ff787b4f8527c0dd195078ff6f9481fbb3",
+      "dependencies": [
+        "jsr:@std/internal"
+      ]
+    },
+    "@std/datetime@0.225.2": {
+      "integrity": "45f0100554a912cd65f48089ef0a33aa1eb6ea21f08090840b539ab582827eaa"
+    },
+    "@std/internal@1.0.5": {
+      "integrity": "54a546004f769c1ac9e025abd15a76b6671ddc9687e2313b67376125650dc7ba"
+    },
+    "@std/path@1.0.8": {
+      "integrity": "548fa456bb6a04d3c1a1e7477986b6cffbce95102d0bb447c67c4ee70e0364be"
+    }
+  },
+  "npm": {
+    "zod@3.24.1": {
+      "integrity": "sha512-muH7gBL9sI1nciMZV67X5fTKKBLtwpZ5VBp1vsOQzj1MhrBZ4wlVCm3gedKZWLp0Oyel8sIGfeiz54Su+OVT+A=="
+    }
+  },
   "redirects": {
     "https://deno.land/x/jsonfile/mod.ts": "https://deno.land/x/jsonfile@1.0.0/mod.ts",
     "https://esm.sh/octokit?dts": "https://esm.sh/octokit@4.0.3?dts"
@@ -53,7 +83,10 @@
   },
   "workspace": {
     "dependencies": [
-      "jsr:@std/assert@1"
+      "jsr:@std/assert@1",
+      "jsr:@std/datetime@~0.225.2",
+      "jsr:@std/path@^1.0.8",
+      "npm:zod@^3.24.1"
     ]
   }
 }
