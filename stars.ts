@@ -1,19 +1,18 @@
-import { readJson } from "https://deno.land/x/jsonfile@1.0.0/mod.ts";
+import { loadJson } from "./load.ts";
+import { FILTERED_JSON } from "./constants.ts";
 
 async function main() {
-	const base = "output";
-	const filePath = `${base}/filtered.json`;
-	const data = await readJson(filePath);
-	if (!Array.isArray(data)) {
-		console.error(`${filePath} does not contain a top-level array`);
-		return;
+	const data = await loadJson(FILTERED_JSON);
+	if (!data.success || data.data === undefined) {
+		console.error(`failed to load ${FILTERED_JSON}: ${data.error}`);
+	} else {
+		const arr = data.data;
+		console.log(`Original entries: ${arr.length}`);
+		const filtered = arr.filter((e) => e.stargazers_count >= 1);
+		console.log(`Filtered entries: ${filtered.length}`);
 	}
-	console.log(`Original entries: ${data.length}`);
-	const filtered = data.filter((e) => e["stargazers_count"] >= 0);
-	console.log(`Filtered entries: ${filtered.length}`);
 }
 
-// Learn more at https://docs.deno.com/runtime/manual/examples/module_metadata#concepts
 if (import.meta.main) {
 	main();
 }
