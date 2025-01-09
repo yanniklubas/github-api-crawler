@@ -7,9 +7,6 @@ const KEYWORDS = [
 	"microservice application",
 	"micro-service application",
 	"micro service application",
-	"microservices application",
-	"micro-services application",
-	"micro services application",
 ];
 
 const TIME_SLICES = [
