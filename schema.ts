@@ -167,4 +167,4 @@ export const RepoSearchResult = z.array(
 		.describe("Repo Search Result Item"),
 );
 
-export type RepoSearchResultArray = z.infer<typeof RepoSearchResult>;
+export type RepoSearchResult = z.infer<typeof RepoSearchResult>;
