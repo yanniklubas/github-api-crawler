@@ -10,37 +10,14 @@ const KEYWORDS = [
 	"micro service application",
 ];
 
-const TIME_SLICES = [
-	// 2020
-	"2020-01-01..2020-04-01",
-	"2020-04-01..2020-08-01",
-	"2020-08-01..2021-01-01",
-	// 2021
-	"2021-01-01..2021-04-01",
-	"2021-04-01..2021-08-01",
-	"2021-08-01..2022-01-01",
-	// 2022
-	"2022-01-01..2022-04-01",
-	"2022-04-01..2022-08-01",
-	"2022-08-01..2023-01-01",
-	// 2023
-	"2023-01-01..2023-04-01",
-	"2023-04-01..2023-08-01",
-	"2023-08-01..2024-01-01",
-	// 2024
-	"2024-01-01..2024-04-01",
-	"2024-04-01..2024-08-01",
-	"2024-08-01..2025-01-01",
-	// 2025
-	"2025-01-01..*",
-];
+const START = new Date("2020-01-01");
 
 Date.prototype.addDays = function (days: number) {
 	const date = new Date(this.valueOf());
 	date.setDate(date.getDate() + days);
 	return date;
 };
-const TOMORROW = format(new Date().addDays(1), "yyyy-MM-dd");
+const TOMORROW = new Date().addDays(1);
 
 async function searchRepositories(
 	client: Octokit,
@@ -49,7 +26,7 @@ async function searchRepositories(
 ) {
 	const dirPath = await mkOutputDir(keyword.replaceAll(" ", "_"));
 	const iterator = newRequestIterator(client, keyword, timeSlice);
-	const time = timeSlice.replaceAll("..", "--").replaceAll("*", TOMORROW);
+	const time = timeSlice.replaceAll("..", "--");
 	let page = 1;
 	for await (const { data: repositories } of iterator) {
 		const fileName = `${time}-page-${page}.json`;
@@ -91,8 +68,14 @@ async function main() {
 	}
 	const client = newApiClient(token);
 	for (const keyword of KEYWORDS) {
-		for (const timeSlice of TIME_SLICES) {
-			await searchRepositories(client, keyword, timeSlice);
+		let current = START;
+		let next = current.addDays(1);
+		while (current < TOMORROW) {
+			const currentFmt = format(current, "yyyy-MM-dd");
+			const nextFmt = format(next, "yyyy-MM-dd");
+			await searchRepositories(client, keyword, `${currentFmt}..${nextFmt}`);
+			current = next;
+			next = next.addDays(1);
 		}
 	}
 
