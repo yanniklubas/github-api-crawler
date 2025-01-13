@@ -4,14 +4,7 @@ import * as path from "jsr:@std/path";
 import { OUTPUT_BASE } from "./constants.ts";
 import { writeFilePretty } from "./write.ts";
 
-const KEYWORDS = [
-	"microservice application",
-	"micro-service application",
-	"micro service application",
-	"microservices application",
-	"micro-services application",
-	"micro services application",
-];
+const KEYWORDS = ["microservice", "micro-service", "micro service"];
 
 const TIME_SLICES = [
 	// 2020
