@@ -37,7 +37,7 @@ async function processJson(
 			...arr.filter((e) => {
 				const isDuplicate = seen.has(e.html_url);
 				seen.add(e.html_url);
-				return e.language != null && !isDuplicate && !e.is_template;
+				return e.language != null && !isDuplicate && !e.is_template && !e.fork;
 			}),
 		);
 	}
