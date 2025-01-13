@@ -6,13 +6,14 @@ import * as path from "jsr:@std/path";
 
 async function main() {
 	const filtered: RepoSearchResult = [];
+	const seen: Set<string> = new Set();
 	for await (const entry of Deno.readDir(OUTPUT_BASE)) {
 		if (entry.isDirectory) {
 			const dirPath = path.join(OUTPUT_BASE, entry.name);
 			for await (const entry of Deno.readDir(dirPath)) {
 				if (isJsonFile(entry)) {
 					const filePath = path.join(dirPath, entry.name);
-					await processJson(filePath, filtered);
+					await processJson(filePath, filtered, seen);
 				}
 			}
 		}
@@ -21,9 +22,12 @@ async function main() {
 	await writeFilePretty(FILTERED_JSON, filtered);
 }
 
-async function processJson(path: string, out: RepoSearchResult) {
+async function processJson(
+	path: string,
+	out: RepoSearchResult,
+	seen: Set<string>,
+) {
 	const data = await loadJson(path);
-	const seen = new Set();
 
 	if (!data.success || data.data === undefined) {
 		console.error(`failed to load ${path}: ${data.error}`);
@@ -31,9 +35,9 @@ async function processJson(path: string, out: RepoSearchResult) {
 		const arr = data.data;
 		out.push(
 			...arr.filter((e) => {
-				const isDuplicate = seen.has(e.id);
-				seen.add(e.id);
-				return e.language != null && !isDuplicate;
+				const isDuplicate = seen.has(e.html_url);
+				seen.add(e.html_url);
+				return e.language != null && !isDuplicate && !e.is_template;
 			}),
 		);
 	}
