@@ -4,7 +4,11 @@ import * as path from "jsr:@std/path";
 import { OUTPUT_BASE } from "./constants.ts";
 import { writeFilePretty } from "./write.ts";
 
-const KEYWORDS = ["microservice", "micro-service", "micro service"];
+const KEYWORDS = [
+	"microservice application",
+	"micro-service application",
+	"micro service application",
+];
 
 const TIME_SLICES = [
 	// 2020
@@ -68,7 +72,7 @@ function newRequestIterator(
 ) {
 	return client.paginate.iterator(
 		`GET /search/repositories?q=${encodeURIComponent(
-			`"${search}" in:readme|name|description pushed:${timeSlice} is:public archived:false`,
+			`${search} in:readme|name|description pushed:${timeSlice} is:public archived:false`,
 		)}`,
 	);
 }
