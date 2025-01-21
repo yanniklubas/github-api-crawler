@@ -61,6 +61,7 @@ function newApiClient(token: string) {
 }
 
 async function searchCode(client: Octokit, repo: string) {
+	console.log(`Querying ${repo}`);
 	const out = {};
 	for (const [key, query] of Object.entries(QUERIES)) {
 		const q = `repo:${repo} ${query}`;
