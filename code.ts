@@ -1,5 +1,6 @@
 import { Octokit } from "https://esm.sh/octokit@4.0.3?dts";
 import { writeFilePretty } from "./write.ts";
+import { OUTPUT_BASE } from "./constants.ts";
 
 const QUERIES = {
 	Prometheus: "prometheus in:file,path",
@@ -69,7 +70,10 @@ async function searchCode(client: Octokit, repo: string) {
 		const data = response.data;
 		out[key] = data;
 	}
-	await writeFilePretty(`${repo.replaceAll("/", "---")}.json`, out);
+	await writeFilePretty(
+		`${OUTPUT_BASE}/${repo.replaceAll("/", "---")}.json`,
+		out,
+	);
 }
 
 async function main() {
@@ -78,6 +82,7 @@ async function main() {
 		console.error("Missing GitHub API token! Exiting...");
 		Deno.exit(1);
 	}
+	await Deno.mkdir(OUTPUT_BASE, { recursive: true });
 	const client = newApiClient(token);
 	const text = await Deno.readTextFile("urls.txt");
 
