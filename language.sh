@@ -58,7 +58,7 @@ main() {
 
         local file_name="${components[${#components[@]} - 2]}---${components[${#components[@]} - 1]}"
         if ! git clone "$url" "$directory"; then
-            log_error "$url" "$error_log"
+            log_error_to_file "$url" "$error_log"
             clean_up "$directory"
             continue
         fi
